@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.commissioner-body {
+  font-family: "Commissioner", sans-serif !important;
+  font-style: normal;
+}
+/* App.css */
+.tabs {
+  font-family: "Commissioner", sans-serif !important;
+}
+
+.tab-list {
+  display: flex;
+  font-family: "Commissioner", sans-serif !important;
+}
+
+.tab {
+  cursor: pointer;
+
+  /* background-color: #f1f1f1; */
+}
+
+.tab.active {
+  /* background-color: #ccc; */
+  font-weight: bold;
+  border-bottom: 2px solid #ef498f;
+  padding-bottom: 4px;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  font-family: "Commissioner", sans-serif !important;
+}
+
+form > div {
+  margin-bottom: 10px;
+}
+
+label {
+  margin-bottom: 5px;
+}
+
+input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: "Commissioner", sans-serif !important;
+}
+
+button {
+  /* color: white !important; */
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 10px;
+  padding: 0%;
+  margin: 0% !important;
+  position: absolute;
+  font-family: "Commissioner", sans-serif !important;
+}
+::placeholder {
+  font-family: "Commissioner", sans-serif !important;
+}
+/* Remove autofill background color */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+.bx{
+
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px !important;
+}
+.hello {
+  font-family: "Commissioner", sans-serif !important;
+  line-height: 30px;
+}
+
+.logoText {
+  font-family: "Poppins", sans-serif !important;
+}
+.monts {
+  font-family: "Montserrat", sans-serif;
+}
+input {
+  font-family: "Montserrat", sans-serif !important;
+  color: black;
+}
+
+label {
+  font-family: "Montserrat", sans-serif !important;
+  font-weight: 500;
+}
+.gradient{
+background: linear-gradient(107.91deg, #EAABF0 7.37%, #4623E9 95.19%);
+}
+.errors {
+  color: red;
+  
+  font-family: "Montserrat", sans-serif !important;
+  font-size: 14px;
+}
+.img {
+background: linear-gradient(201.18deg, #D3FFE7 3.14%, #EFFFF6 86.04%);
+width: fit-content;
+height: fit-content;
+}
+.custom-border-right  {
+    border-right: 2px solid #F0F0F0 !important;
+}
