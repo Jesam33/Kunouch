@@ -1,85 +1,155 @@
 import { createContext } from "react";
-import React, { useState } from "react";
-import PropTypes from 'prop-types';
-
+import React, { useState, navigate } from "react";
+import PropTypes from "prop-types";
+import { auth } from "../../firebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 export const FormContext = createContext();
 
 const FormProvider = ({ children }) => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [errors, setErrors] = useState({});
-    const [searchInput , setSearchInput] = useState("");
-    const [selectInput , setSelectInput] = useState("");
-    const [openSidebar , setOpenSidebar] = useState();
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // const [firstName, setFirstName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-    const handleOpenSidebar = () => {
-        setOpenSidebar(!openSidebar);
+  const [errors, setErrors] = useState({});
+  const [searchInput, setSearchInput] = useState("");
+  const [selectInput, setSelectInput] = useState("");
+  const [openSidebar, setOpenSidebar] = useState(false);
+
+  const [user, setUser] = useState(null);
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const handleOpenSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const SignUp = async (email, password) => {
+    try {
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      setUser(response.user);
+      console.log("user", JSON.stringify(response.user));
+    } catch (error) {
+      toast.error(`Error creating user: ${error.message}`);
+      throw error;
+    }
+  };
+
+  const logIn = async (email, password) => {
+    if (!email || !password) {
+      alert("Email and password are required.");
+      return;
+    } else {
+      try {
+        const response = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        setUser(response.user);
+        console.log("user", JSON.stringify(response.user));
+      } catch (error) {
+        alert(`Failed to login: ${error.message}`);
+        throw error;
       }
-      
+    }
+  };
 
-    const Validate = () => {
-        const newErrors = {};
+  const logOut = () => {
+    signOut(auth).then(() => {
+      setUser(null);
+      console.log("setuser to null");
+    });
+  };
 
-        if (!email) {
-            newErrors.email = "Email is required";
+  const Validate = () => {
+    const newErrors = {};
 
-        } if (!emailRegex.test(email)) {
-            newErrors.email = "Email is not valid";
-        }
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Email is not valid";
+    }
 
-        if (!password) {
-            newErrors.password = "Password is required";
-        }else if (password.length < 8) {
-            newErrors.password = "Password should be at least 8 characters long";
-        }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password should be at least 8 characters long";
+    }
 
-        if(!confirmPassword) {
-            newErrors.confirmPassword = "Confirm password is required";
-        }else if(password.length < 8) {
-            newErrors.confirmPassword = "Password must be at least 8 characters long"
-        }
-        else if (confirmPassword !== password) {
-            newErrors.confirmPassword = "Passwords do not match";
-        }
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirm password is required";
+    } else if (formData.confirmPassword.length < 8) {
+      newErrors.confirmPassword = "Password must be at least 8 characters long";
+    } else if (formData.confirmPassword !== formData.password) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
 
-        if (!firstName) {
-            newErrors.firstName = "First name is required";
-        }
-        if (!lastName) {
-            newErrors.lastName = "Last name is required";
-        }
+    if (!formData.firstName) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "Last name is required";
+    }
 
-        setErrors(newErrors); // Set all errors at once
-        return newErrors;
-    };
+    setErrors(newErrors);
+    return newErrors;
+  };
 
-    return (
-        <FormContext.Provider value={{
-            firstName, setFirstName,
-            confirmPassword, setConfirmPassword,
-            lastName, setLastName,
-            email, setEmail,
-            searchInput, setSearchInput,
-            password, setPassword,
-            selectInput, setSelectInput,
-            openSidebar, setOpenSidebar,
-            handleOpenSidebar,
-            errors,
-            Validate
-        }}>
-            {children}
-        </FormContext.Provider>
-    );
+  return (
+    <FormContext.Provider
+      value={{
+        formData,
+        setFormData,
+        searchInput,
+        setSearchInput,
+        selectInput,
+        setSelectInput,
+        openSidebar,
+        setOpenSidebar,
+        handleOpenSidebar,
+        handleChange,
+        user,
+        setUser,
+        errors,
+        SignUp,
+        logIn,
+        logOut,
+        Validate,
+      }}
+    >
+      {children}
+    </FormContext.Provider>
+  );
 };
 
 FormProvider.propTypes = {
-    children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default FormProvider;

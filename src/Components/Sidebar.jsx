@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import logoImg from "../assets/img/setting 1.png";
 import userIcon from "../assets/img/Ellipse 8.png";
 import { FormContext } from "../Contexts/FormProvider";
+import { useNavigate } from "react-router-dom";
 
 // icons
 import { TbSquareKey } from "react-icons/tb";
@@ -18,7 +19,13 @@ import { IoCloseOutline } from "react-icons/io5";
 
 
 const Sidebar = () => {
-  const { openSidebar, setOpenSidebar, handleOpenSidebar } = useContext(FormContext);
+  const navigate = useNavigate();
+  const { openSidebar, setOpenSidebar, handleOpenSidebar, logOut } = useContext(FormContext);
+
+  const handleLogOut = () => {
+    logOut();
+    navigate("/login")
+  }
 
   return (
     <div
@@ -67,6 +74,7 @@ const Sidebar = () => {
         </div>
         <FaChevronDown className="ml-4 hidden lg:flex" />
       </div>
+      <button onClick={handleLogOut} className="w-[80%] monts text-xl text-white rounded-[10px] font-[600] mt-7 p-3 bg-red-600" >Logout</button>
     </div>
   );
 };

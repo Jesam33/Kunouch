@@ -1,43 +1,48 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormContext } from "../Contexts/FormProvider";
-import logoImg from "../assets/img/setting 1.png";
 import userIcon from "../assets/img/Ellipse 8.png";
+import logoImg from "../assets/img/setting 1.png";
+import { auth } from "../../firebaseConfig";
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 const Form = () => {
   const navigate = useNavigate();
   const {
-    setFirstName,
-    setEmail,
-    setPassword,
-    email,
-    firstName,
-    lastName,
-    confirmPassword,
-    setConfirmPassword,
-    setLastName,
-    password,
+    formData,
+    SignUp,
+    setFormData,
     Validate,
     errors,
+    handleChange,
   } = useContext(FormContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = Validate();
 
     if (Object.keys(validationErrors).length > 0) {
-      console.log("Validation errors:", validationErrors);
-      return;
-    } else {
-      localStorage.setItem("firstName", firstName);
-      console.log(firstName);
-      alert("Form successfully created");
-      navigate("/dashboard");
+        return; // Exit if there are validation errors
+        toast.error()
     }
-  };
+
+    try {
+        await SignUp(formData.email, formData.password);
+        toast.success('Sign-up successful!')
+        navigate('/login'); // Navigate only if sign-up succeeds
+    } catch (error) {
+        console.error("Sign-up error:", error);
+        toast.error('Sign-up failed! Please try again.')
+    }
+};
+
+
 
   return (
     <div className="p-4 md:p-11 lg:px-16 xl:px-24 bg-[#eee3e3ab] min-h-screen flex items-center justify-center">
+      <ToastContainer />
       <div className="flex flex-col lg:flex-row w-full lg:w-[100%] xl:w-[80%] 2xl:w-[80%] mx-auto">
         {/* Sidebar Section */}
         <div className="bg-blue-600 hidden lg:flex flex-col w-full lg:w-[45%] xl:w-[40%]  p-6 lg:p-8">
@@ -82,8 +87,8 @@ const Form = () => {
               <div className="flex flex-col w-full md:w-[50%]">
                 <label htmlFor="firstName">First Name</label>
                 <input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  name="firstName"
+                  onChange={handleChange}
                   className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                   type="text"
                 />
@@ -92,8 +97,8 @@ const Form = () => {
               <div className="flex flex-col w-full md:w-[50%]">
                 <label htmlFor="lastName">Last Name</label>
                 <input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  name="lastName"
+                  onChange={handleChange}
                   className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                   type="text"
                 />
@@ -103,8 +108,8 @@ const Form = () => {
             <div className="flex flex-col space-y-0 mt-4">
               <label htmlFor="email">Email</label>
               <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                onChange={handleChange}
                 className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                 type="email"
               />
@@ -113,8 +118,8 @@ const Form = () => {
             <div className="flex flex-col space-y-0 mt-4">
               <label htmlFor="password">Password</label>
               <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                onChange={handleChange}
                 className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                 type="password"
               />
@@ -123,8 +128,8 @@ const Form = () => {
             <div className="flex flex-col space-y-0 mt-4">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <input
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                name="confirmPassword"
+                onChange={handleChange}
                 className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                 type="password"
               />
