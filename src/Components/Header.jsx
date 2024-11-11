@@ -6,15 +6,15 @@ import { FormContext } from "../Contexts/FormProvider";
 import { RiMenu2Fill } from "react-icons/ri";
 
 const Header = () => {
-  const { firstName, formData,  setSearchInput, searchInput, setOpenSidebar, openSidebar, handleOpenSidebar } = useContext(FormContext);
-  localStorage.getItem("firstName", firstName)
+  const { firstName, formData, saveFirstName,  setSearchInput, searchInput, setOpenSidebar, openSidebar, handleOpenSidebar } = useContext(FormContext);
+  const userName = localStorage.getItem("firstName");
   
   return (
     <header className="header">
       <div className="div md:flex lg:flex justify-between  items-center m-5 mx-[30px]">
         <div className="greetins flex justify-between items-center">
           <h1 className="text-1xl md:text-2xl font-[600] logoText">
-            Hello, {formData.firstName}👋
+            Hello, {userName}👋
           </h1>
           <button className="md:hidden lg:hidden" onClick={handleOpenSidebar}><RiMenu2Fill/></button>
         </div>

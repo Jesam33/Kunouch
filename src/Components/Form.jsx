@@ -1,44 +1,48 @@
 import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FormContext } from "../Contexts/FormProvider";
 import userIcon from "../assets/img/Ellipse 8.png";
 import logoImg from "../assets/img/setting 1.png";
 import { auth } from "../../firebaseConfig";
-import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Form = () => {
   const navigate = useNavigate();
-  const {
-    formData,
-    SignUp,
-    setFormData,
-    Validate,
-    errors,
-    handleChange,
-  } = useContext(FormContext);
+  const { formData, isLoading, setIsLoading,  handlesaveFirstName, saveFirstName, setSaveFirstName, SignUp, setFormData, Validate, errors, handleChange } =
+    useContext(FormContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const validationErrors = Validate();
-
     if (Object.keys(validationErrors).length > 0) {
-        return; // Exit if there are validation errors
-        toast.error()
+      return; // <ToastContainer /> // Exit if there are validation errors
+    } else {
+      toast.success("Signed in successfully")
+      console.log("success");
     }
-
+    handlesaveFirstName;
+    localStorage.setItem("Firstname", formData.firstname);
     try {
-        await SignUp(formData.email, formData.password);
-        toast.success('Sign-up successful!')
-        navigate('/login'); // Navigate only if sign-up succeeds
+      setIsLoading(true);
+      await SignUp(formData.email, formData.password, navigate);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      validationErrors({
+      });
+
     } catch (error) {
-        console.error("Sign-up error:", error);
-        toast.error('Sign-up failed! Please try again.')
+      console.error("Sign-up error:", error);
+      toast.error("Sign-up failed! Please try again.");
+    }finally {
+      setIsLoading(false);
     }
-};
-
-
+  };
 
   return (
     <div className="p-4 md:p-11 lg:px-16 xl:px-24 bg-[#eee3e3ab] min-h-screen flex items-center justify-center">
@@ -54,7 +58,10 @@ const Form = () => {
             </div>
           </div>
           <div className="text-white mb-12">
-            <h1 className="text-3xl xl:text-4xl font-bold" style={{ lineHeight: "45px" }}>
+            <h1
+              className="text-3xl xl:text-4xl font-bold"
+              style={{ lineHeight: "45px" }}
+            >
               Let’s set up your Operating Agreement
             </h1>
             <p className="mt-6 text-[14px] font-light">
@@ -64,14 +71,21 @@ const Form = () => {
             </p>
           </div>
           <div className="bg-blue-700 mt-auto text-white rounded-lg shadow-lg p-6 lg:p-8">
-            <h3 className="text-xl font-semibold mb-2">I barely had to do anything</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              I barely had to do anything
+            </h3>
             <p className="text-sm mb-4">
-              Love the experience. Got my business set up and all necessary details in about a month,
-              and I barely had to do anything. Definitely recommend!
+              Love the experience. Got my business set up and all necessary
+              details in about a month, and I barely had to do anything.
+              Definitely recommend!
             </p>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <img src={userIcon} alt="Adamson Johns" className="w-8 h-8 rounded-full" />
+                <img
+                  src={userIcon}
+                  alt="Adamson Johns"
+                  className="w-8 h-8 rounded-full"
+                />
                 <span className="font-medium">Adamson Johns</span>
               </div>
               <span className="text-yellow-400">★★★★★</span>
@@ -135,9 +149,11 @@ const Form = () => {
               />
               <p className="errors text-red-500">{errors.confirmPassword}</p>
             </div>
-            <button className="w-full font-semibold mt-4 rounded-[5px] bg-blue-500 text-white py-2 xl:py-3">
-              Get Started
+            <button className="w-full font-semibold mt-4 rounded-[5px] bg-blue-500 text-white py-2 xl:py-3">{isLoading ? 'Loading..' : 'Get Started'}
             </button>
+            <div className="mt-4">
+              <p className="label" htmlFor="password">Already have an account? <Link className="text-blue-700 underline" to="/login">Login Here</Link></p>
+              </div>
           </form>
         </div>
       </div>

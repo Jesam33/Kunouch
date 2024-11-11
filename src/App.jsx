@@ -6,10 +6,12 @@ import FormContext from './Contexts/FormProvider';
 import FormProvider from './Contexts/FormProvider';
 import MainContent from './Components/MainContent';
 import Login from './Components/Login';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
   return (
     <FormProvider>
+      <ToastContainer/>
     <Router>
       <Routes>
         <Route path="/" element={<Form />} />

@@ -1,12 +1,13 @@
-import React, { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FormContext } from "../Contexts/FormProvider";
 import userIcon from "../assets/img/Ellipse 8.png";
 import logoImg from "../assets/img/setting 1.png";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Form from "./Form";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,11 +15,18 @@ const Login = () => {
     formData,
     SignUp,
     user,
+    isLoading,
+    setIsLoading,
     setUser,
+    setSignUp,
+    loginValidate,
     setFormData,
     logIn,
     Validate,
     errors,
+    loginData,
+    loginhandleChange,
+    setLoginData,
     handleChange,
   } = useContext(FormContext);
 
@@ -43,20 +51,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("good working button");
-
-    const validationErrors = Validate();
-
-    if (Object.keys(validationErrors).length > 0) {
-      return; // Stop if there are validation errors
+    
+    const loginErrors = loginValidate();
+    if (Object.keys(loginErrors).length > 0 ){
+      toast.error("Form has errors");
+      console.log(loginErrors);
+      return;
+    }else {
+      toast.success("Login success");
     }
-
+    
+    setIsLoading(true);
     try {
-      await logIn(formData.email, formData.password); // Adjust to formData if needed
-      toast.success("Login Success")
+      await logIn(loginData.email, loginData.password); // Adjust to formData if needed
+      toast.success("Login Success");
       navigate("/dashboard"); // Navigate only if login is successful
     } catch (error) {
       console.log("Failed to log in user:", error.message);
-      toast.error("Login Failed")
+      toast.error("Login Failed");
       console.error("Login error:", error);
     }
   };
@@ -119,7 +131,7 @@ const Login = () => {
                 <label htmlFor="email">Email</label>
                 <input
                   name="email"
-                  onChange={handleChange}
+                  onChange={loginhandleChange}
                   className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                   type="email"
                 />
@@ -129,15 +141,18 @@ const Login = () => {
                 <label htmlFor="password">Password</label>
                 <input
                   name="password"
-                  onChange={handleChange}
+                  onChange={loginhandleChange}
                   className="py-2 xl:py-3 bg-transparent outline-none px-3 rounded-[5px] border border-gray-400"
                   type="password"
                 />
                 <p className="errors text-red-500">{errors.password}</p>
               </div>
               <button className="w-full font-semibold mt-4 rounded-[5px] bg-blue-500 text-white py-2 xl:py-3">
-                Login
+               {isLoading ? "Loading ..." : "login"}
               </button>
+              <div className="mt-4">
+              <p className="label" htmlFor="password">Don't have an account? <Link className="text-blue-700 underline" to="/">Sign Up</Link></p>
+              </div>
             </div>
           </form>
         </div>

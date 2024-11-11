@@ -105,6 +105,10 @@ label {
   font-family: "Montserrat", sans-serif !important;
   font-weight: 500;
 }
+.label{
+  font-family: "Montserrat", sans-serif !important;
+  font-weight: 500;
+}
 .gradient{
 background: linear-gradient(107.91deg, #EAABF0 7.37%, #4623E9 95.19%);
 }

@@ -8,8 +8,8 @@ import {
   signOut,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const FormContext = createContext();
 
@@ -27,10 +27,17 @@ const FormProvider = ({ children }) => {
     confirmPassword: "",
   });
 
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
   const [errors, setErrors] = useState({});
   const [searchInput, setSearchInput] = useState("");
   const [selectInput, setSelectInput] = useState("");
   const [openSidebar, setOpenSidebar] = useState(false);
+  const [saveFirstName, setSaveFirstName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [user, setUser] = useState(null);
 
@@ -45,22 +52,33 @@ const FormProvider = ({ children }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const SignUp = async (email, password) => {
+  const loginhandleChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData({ ...loginData, [name]: value });
+  };
+
+  const handlesaveFirstName = () => {
+    setSaveFirstName(formData.firstName);
+  }
+
+  const SignUp = async (email, password, navigate) => {
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      setUser(response.user);
+      // Redirect to login page
+      navigate("/login");
+
       console.log("user", JSON.stringify(response.user));
     } catch (error) {
       toast.error(`Error creating user: ${error.message}`);
-      throw error;
     }
   };
 
   const logIn = async (email, password) => {
+    console.log("loging in", email, password);
     if (!email || !password) {
       alert("Email and password are required.");
       return;
@@ -121,6 +139,21 @@ const FormProvider = ({ children }) => {
     return newErrors;
   };
 
+  const loginValidate = () => {
+    const loginNewErrors = {};
+    if(!loginData.email) {
+      loginNewErrors.email = "Email is required"
+    }else if (!emailRegex.test(loginData.email)) {
+      loginNewErrors.email = "Email is not valid";
+    }
+     if(!loginData.password) {
+      loginNewErrors.password = "Password is required"
+    }
+
+    setErrors(loginNewErrors);
+    return loginNewErrors;
+  }
+
   return (
     <FormContext.Provider
       value={{
@@ -134,6 +167,15 @@ const FormProvider = ({ children }) => {
         setOpenSidebar,
         handleOpenSidebar,
         handleChange,
+        loginData,
+        setLoginData,
+        loginhandleChange,
+        loginValidate,
+        loginData,
+        setLoginData,
+        saveFirstName,
+        setSaveFirstName,
+        handlesaveFirstName,
         user,
         setUser,
         errors,
@@ -141,6 +183,8 @@ const FormProvider = ({ children }) => {
         logIn,
         logOut,
         Validate,
+        isLoading,
+        setIsLoading,
       }}
     >
       {children}
